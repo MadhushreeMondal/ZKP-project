@@ -10,10 +10,11 @@ const {
   formatProofForContract,
 } = require("../services/zkpService");
 const { submitProofOnChain } = require("../services/blockchainService");
+const { authenticateJWT, requireRole } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.post("/submit", async (req, res) => {
+router.post("/submit", authenticateJWT, requireRole(["farmer"]), async (req, res) => {
   try {
     const { crop, yield: yieldValue, temperature, inventory, pesticide, price } =
       req.body;
@@ -94,7 +95,7 @@ router.post("/submit", async (req, res) => {
   }
 });
 
-router.get("/regulator", async (_req, res) => {
+router.get("/regulator", authenticateJWT, requireRole(["regulator"]), async (_req, res) => {
   try {
     const records = await ComplianceRecord.find(
       {},
