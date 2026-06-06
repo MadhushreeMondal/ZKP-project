@@ -1,0 +1,16 @@
+{
+  "name": "agri-zkp-privacy-layer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Application Privacy Layer Using Zero-Knowledge Proofs for Confidential Data Interaction in Multi-Chain Agricultural Blockchain Systems",
+  "scripts": {
+    "install:all": "npm install --prefix zkp && npm install --prefix contracts && npm install --prefix backend && npm install --prefix frontend",
+    "zkp:build": "npm run build --prefix zkp",
+    "contracts:compile": "npm run compile --prefix contracts",
+    "contracts:node": "npm run node --prefix contracts",
+    "contracts:deploy": "npm run deploy --prefix contracts",
+    "backend": "npm run dev --prefix backend",
+    "frontend": "npm run dev --prefix frontend",
+    "preflight": "node scripts/preflight.js"
+  }
+}
