@@ -1,26 +1,6 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true only for port 465
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
-
-// Verify SMTP connection when server starts
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("EMAIL CONFIG ERROR:", error);
-  } else {
-    console.log("EMAIL SERVER READY");
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendRegulatorCredentials(
   email,
@@ -29,10 +9,8 @@ async function sendRegulatorCredentials(
   temporaryPassword
 ) {
   try {
-    console.log("Sending email to:", email);
-
-    const mailOptions = {
-      from: `"Agri ZKP Privacy Layer" <${process.env.EMAIL_USER}>`,
+    const response = await resend.emails.send({
+      from: "onboarding@resend.dev",
       to: email,
       subject: "Agri ZKP - Regulator Account Approved",
       html: `
@@ -49,19 +27,14 @@ async function sendRegulatorCredentials(
 
         <br>
 
-        <p>Regards,</p>
-        <p><strong>Agri ZKP Privacy Layer Team</strong></p>
+        <p>Agri ZKP Privacy Layer Team</p>
       `,
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-
-    console.log("EMAIL SENT SUCCESSFULLY");
-    console.log("Message ID:", info.messageId);
-
-    return info;
+    console.log("EMAIL SENT:", response);
+    return response;
   } catch (error) {
-    console.error("EMAIL SEND ERROR:", error);
+    console.error("EMAIL ERROR:", error);
     throw error;
   }
 }
