@@ -107,7 +107,7 @@ console.log("USER CREATED:", newUser._id);
     stack: error.stack,
   });
 }
-
+});
 // 2. LOGIN ROUTE
 router.post("/login", async (req, res) => {
   try {
