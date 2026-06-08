@@ -5,6 +5,6 @@ artifacts/
 cache/
 typechain-types/
 .env
-zkp/build/
+
 backend/config/deployments.json
 *.log
