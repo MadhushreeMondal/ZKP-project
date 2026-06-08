@@ -1,11 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Html5QrcodeScanner } from "html5-qrcode";
 import { verifyProduct } from "../api/client";
 
 export default function CustomerDashboard() {
 const [productId, setProductId] = useState("");
 const [result, setResult] = useState(null);
 
-  const handleSearch = async (e) => {
+useEffect(() => {
+  let scanner;
+  scanner = new Html5QrcodeScanner(
+    "reader",
+    {
+      fps: 10,
+      qrbox: 250,
+    },
+    false
+  );
+
+scanner.render(
+  async (decodedText) => {
+    setProductId(decodedText);
+
+    try {
+      const data = await verifyProduct(decodedText);
+      setResult(data);
+    } catch {
+      alert("Product not found");
+      setResult(null);
+    }
+  },
+  () => {}
+);
+
+return () => {
+  if (scanner) {
+    scanner.clear().catch(() => {});
+  }
+};
+}, []);
+
+const handleSearch = async (e) => {
   e.preventDefault();
 
   if (!productId) return;
@@ -95,21 +129,28 @@ const [result, setResult] = useState(null);
 
         </section>
 
-        {/* Scan QR Code Mock Interface */}
-        <section className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm flex flex-col justify-between items-center text-center space-y-4">
-          <div className="space-y-2">
-            <h3 className="text-lg font-bold text-slate-800">Scan QR Code</h3>
-            <p className="text-xs text-slate-500 max-w-sm">
-              Future support for instant mobile phone scanner interface, allowing consumers to scan QR stickers physically attached to packaging.
-            </p>
-          </div>
-          <div className="w-32 h-32 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-350 hover:bg-slate-100 transition cursor-pointer">
-            <div className="flex flex-col items-center">
-              <span className="text-3xl">📷</span>
-              <span className="text-2xs font-semibold text-slate-500 mt-1">Open Camera</span>
-            </div>
-          </div>
-          <p className="text-2xs text-slate-400">Powered by Agri ZKP verification protocol</p>
+        {/* QR Scanner */}
+<section className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm flex flex-col items-center text-center space-y-4">
+
+  <div className="space-y-2">
+    <h3 className="text-lg font-bold text-slate-800">
+      Scan QR Code
+    </h3>
+
+    <p className="text-xs text-slate-500 max-w-sm">
+      Scan the QR code printed on the crop package to verify compliance.
+    </p>
+  </div>
+
+  <div
+    id="reader"
+    className="w-full max-w-sm"
+  ></div>
+
+  <p className="text-xs text-slate-400">
+    Powered by Agri ZKP verification protocol
+  </p>
+
         </section>
       </div>
 
