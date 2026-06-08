@@ -5,6 +5,5 @@ artifacts/
 cache/
 typechain-types/
 .env
-
 backend/config/deployments.json
 *.log
