@@ -9,7 +9,10 @@ let rulesCache = null;
 function loadRules() {
   if (rulesCache) return rulesCache;
 
-  const csv = fs.readFileSync(RULES_PATH, "utf-8");
+console.log("RULES_PATH =", RULES_PATH);
+console.log("FILE EXISTS =", fs.existsSync(RULES_PATH));
+
+const csv = fs.readFileSync(RULES_PATH, "utf-8");
   const records = parse(csv, { columns: true, skip_empty_lines: true });
 
   rulesCache = records.map((row) => ({
