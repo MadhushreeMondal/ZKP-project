@@ -1,5 +1,6 @@
 const express = require("express");
 const ComplianceRecord = require("../models/ComplianceRecord");
+const QRCode = require("qrcode");
 const {
   getRulesForCrop,
   validateCompliance,
@@ -68,8 +69,16 @@ router.post("/submit", authenticateJWT, requireRole(["farmer"]), async (req, res
     }
 
     const verificationResult = chainResult.verified || locallyVerified;
+    const productId =
+  "PRD-" + Math.floor(100000 + Math.random() * 900000);
+
+const qrUrl =
+  `https://zkp-project-zeta.vercel.app/verify/${productId}`;
+
+const qrCode = await QRCode.toDataURL(qrUrl);
 
     const record = await ComplianceRecord.create({
+      productId,
       crop,
       proofHash,
       verificationResult,
@@ -80,14 +89,16 @@ router.post("/submit", authenticateJWT, requireRole(["farmer"]), async (req, res
 
     res.status(201).json({
       message: "Compliance proof generated and submitted",
-      record: {
-        id: record._id,
-        crop: record.crop,
-        proofHash: record.proofHash,
-        verificationResult: verificationResult,
-        timestamp: record.timestamp,
-        txHash: record.txHash,
-      },
+record: {
+  id: record._id,
+  productId,
+  crop: record.crop,
+  proofHash: record.proofHash,
+  verificationResult,
+  timestamp: record.timestamp,
+  txHash: record.txHash,
+  qrCode,
+},
     });
   } catch (error) {
     console.error(error);
