@@ -1,27 +1,26 @@
 import { useState } from "react";
+import { verifyProduct } from "../api/client";
 
 export default function CustomerDashboard() {
-  const [batchId, setBatchId] = useState("");
-  const [result, setResult] = useState(null);
+const [productId, setProductId] = useState("");
+const [result, setResult] = useState(null);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (!batchId) return;
+  const handleSearch = async (e) => {
+  e.preventDefault();
 
-    // Phase 1 Mock Verification response
-    setResult({
-      batchId: batchId.toUpperCase(),
-      crop: "Wheat",
-      organicStatus: "✅ Verified Organic (Pesticide safe)",
-      fairPriceStatus: "✅ Verified Fair Trade (Ethical range)",
-      blockchainStatus: "✅ Verified on Hardhat Ethereum Testnet",
-      txHash: "0x3bc72b9a7b97e937d5635f6f40449cf9efd06587c67bfb809d84fde90784ad32",
-      verificationDate: new Date().toLocaleDateString(),
-    });
-  };
+  if (!productId) return;
+
+  try {
+    const data = await verifyProduct(productId);
+    setResult(data);
+  } catch (error) {
+    alert("Product not found");
+    setResult(null);
+  }
+};
 
   const futureFeatures = [
-    { name: "Search Crop Batch ID", desc: "Instantly lookup compliance metrics by agricultural batch ID." },
+    { name: "Search Crop Product ID", desc: "Instantly lookup compliance metrics by agricultural Product ID." },
     { name: "Scan Crop QR Code", desc: "Scan physical product QR labels in grocery outlets for mobile validation." },
     { name: "Verify Organic status", desc: "Proof of non-toxic cultivation without exposing exact pesticide volumes." },
     { name: "Verify Fair-Price status", desc: "Proof of ethical trade margins without exposing exact purchase agreements." },
@@ -41,16 +40,16 @@ export default function CustomerDashboard() {
       <div className="grid gap-6 md:grid-cols-2">
         {/* Mock Search Tool */}
         <section className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm space-y-4">
-          <h3 className="text-lg font-bold text-slate-800">Search Batch ID</h3>
+          <h3 className="text-lg font-bold text-slate-800">Search Product ID</h3>
           <p className="text-xs text-slate-500">
-            Try entering a sample batch ID like <span className="font-mono bg-slate-100 px-1 py-0.5 rounded font-semibold text-slate-700">BHD2026001</span> to run a mock query.
+            Try entering a sample Product ID like <span className="font-mono bg-slate-100 px-1 py-0.5 rounded font-semibold text-slate-700">PRD-243511</span> to run a mock query.
           </p>
           <form onSubmit={handleSearch} className="flex gap-2">
             <input
               type="text"
-              value={batchId}
-              onChange={(e) => setBatchId(e.target.value)}
-              placeholder="e.g. BHD2026001"
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+              placeholder="e.g. PRD-243511"
               required
               className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-agri-500 focus:outline-none focus:ring-2 focus:ring-agri-200 text-sm"
             />
@@ -63,22 +62,37 @@ export default function CustomerDashboard() {
           </form>
 
           {result && (
-            <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 space-y-3 text-sm text-slate-700">
-              <div className="flex justify-between border-b border-emerald-150 pb-2">
-                <span className="font-bold text-slate-850">Batch: {result.batchId}</span>
-                <span className="text-xs font-semibold text-slate-500">Crop: {result.crop}</span>
-              </div>
-              <div className="space-y-1">
-                <p>{result.organicStatus}</p>
-                <p>{result.fairPriceStatus}</p>
-                <p>{result.blockchainStatus}</p>
-              </div>
-              <div className="text-xs text-slate-500 pt-1 border-t border-emerald-150 space-y-1">
-                <p className="break-all">Tx Hash: {result.txHash}</p>
-                <p>Checked on: {result.verificationDate}</p>
-              </div>
-            </div>
-          )}
+  <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 space-y-3 text-sm text-slate-700">
+    
+    <p>
+      <strong>Product ID:</strong> {result.productId}
+    </p>
+
+    <p>
+      <strong>Crop:</strong> {result.crop}
+    </p>
+
+    <p>
+      <strong>Status:</strong>{" "}
+      {result.verificationResult
+        ? "✅ VERIFIED"
+        : "❌ FAILED"}
+    </p>
+
+    <p className="break-all">
+      <strong>Proof Hash:</strong>{" "}
+      {result.proofHash}
+    </p>
+
+    {result.txHash && (
+      <p className="break-all">
+        <strong>Tx Hash:</strong>{" "}
+        {result.txHash}
+      </p>
+    )}
+  </div>
+)}
+
         </section>
 
         {/* Scan QR Code Mock Interface */}

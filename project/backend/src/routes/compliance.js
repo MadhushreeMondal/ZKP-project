@@ -131,4 +131,24 @@ router.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+router.get("/verify/:productId", async (req, res) => {
+  try {
+    const record = await ComplianceRecord.findOne({
+      productId: req.params.productId,
+    });
+
+    if (!record) {
+      return res.status(404).json({
+        error: "Product not found",
+      });
+    }
+
+    res.json(record);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;

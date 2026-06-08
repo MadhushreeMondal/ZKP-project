@@ -47,5 +47,8 @@ export const submitCompliance = (payload) =>
 export const getRegulatorRecords = () =>
   api.get("/compliance/regulator").then((r) => r.data.records);
 
+export const verifyProduct = (productId) =>
+  api.get(`/compliance/verify/${productId}`).then((r) => r.data);
+
 export default api;
 

@@ -67,7 +67,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-semibold text-slate-850">Consumer Transparency</h3>
             <p className="text-sm text-slate-650 leading-relaxed">
-              Customers can scan product batch IDs to verify organic status and fair-price compliance instantly, without accessing proprietary farming parameters.
+              Customers can scan product Product IDs to verify organic status and fair-price compliance instantly, without accessing proprietary farming parameters.
             </p>
           </div>
         </div>
