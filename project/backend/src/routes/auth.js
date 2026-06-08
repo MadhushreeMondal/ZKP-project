@@ -5,6 +5,10 @@ const User = require("../models/User");
 const RegulatorApplication = require("../models/RegulatorApplication");
 const { authenticateJWT, requireRole, JWT_SECRET } = require("../middleware/auth");
 
+const {
+  sendRegulatorCredentials,
+} = require("../services/emailService");
+
 const router = express.Router();
 
 // Helper to generate next regulator ID or random suffix
@@ -272,16 +276,22 @@ router.post("/admin/approve/:appId", authenticateJWT, requireRole(["admin"]), as
     // Update application
     app.status = "Approved";
     await app.save();
+    await sendRegulatorCredentials(
+  user.email,
+  user.name,
+  regulatorId,
+  tempPassword
+);
 
     res.json({
-      message: "Application approved and regulator account created",
-      regulator: {
-        regulatorId,
-        temporaryPassword: tempPassword,
-        email: user.email,
-        name: user.name,
-      },
-    });
+  message: "Application approved, regulator account created and email sent",
+  regulator: {
+    regulatorId,
+    temporaryPassword: tempPassword,
+    email: user.email,
+    name: user.name,
+  },
+});
   } catch (error) {
     console.error("Approve error:", error);
     res.status(500).json({ error: error.message });
