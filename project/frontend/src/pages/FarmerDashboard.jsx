@@ -141,19 +141,52 @@ export default function FarmerDashboard() {
         )}
 
         {result && (
-          <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            <p className="font-semibold">Proof submitted successfully</p>
-            <p className="mt-1">Crop: {result.crop}</p>
-            <p>Proof Hash: {result.proofHash.slice(0, 24)}...</p>
-            <p>
-              Verification:{" "}
-              {result.verificationResult ? "✅ Verified" : "❌ Failed"}
-            </p>
-            {result.txHash && (
-              <p className="mt-1 break-all">Tx: {result.txHash}</p>
-            )}
-          </div>
-        )}
+  <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+    <p className="font-semibold text-lg">
+      Proof submitted successfully
+    </p>
+
+    <p className="mt-2">
+      <strong>Product ID:</strong> {result.productId}
+    </p>
+
+    <p>
+      <strong>Crop:</strong> {result.crop}
+    </p>
+
+    <p>
+      <strong>Proof Hash:</strong>{" "}
+      {result.proofHash.slice(0, 24)}...
+    </p>
+
+    <p>
+      <strong>Verification:</strong>{" "}
+      {result.verificationResult
+        ? "✅ Verified"
+        : "❌ Failed"}
+    </p>
+
+    {result.txHash && (
+      <p className="mt-1 break-all">
+        <strong>Tx:</strong> {result.txHash}
+      </p>
+    )}
+
+    {result.qrCode && (
+      <div className="mt-4">
+        <p className="mb-2 font-semibold">
+          Scan QR to verify product
+        </p>
+
+        <img
+          src={result.qrCode}
+          alt="Compliance QR Code"
+          className="w-48 h-48 border rounded"
+        />
+      </div>
+    )}
+  </div>
+)}
       </section>
 
       <RulesPanel rules={rules} />
