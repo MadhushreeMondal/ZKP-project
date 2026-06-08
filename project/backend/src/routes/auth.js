@@ -71,14 +71,18 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
-      name,
-      email,
-      phone,
-      password: hashedPassword,
-      role,
-      ...extraData,
-    });
+  console.log("REGISTER PAYLOAD:", req.body);
+
+const newUser = await User.create({
+  name,
+  email,
+  phone,
+  password: hashedPassword,
+  role,
+  ...extraData,
+});
+
+console.log("USER CREATED:", newUser._id);
 
     const token = jwt.sign(
       { id: newUser._id, role: newUser.role, email: newUser.email },
@@ -97,10 +101,12 @@ router.post("/register", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Registration error:", error);
-    res.status(500).json({ error: error.message });
-  }
-});
+  console.error("REGISTRATION ERROR FULL:", error);
+  res.status(500).json({
+    error: error.message,
+    stack: error.stack,
+  });
+}
 
 // 2. LOGIN ROUTE
 router.post("/login", async (req, res) => {
