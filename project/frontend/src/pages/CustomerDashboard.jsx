@@ -19,12 +19,30 @@ useEffect(() => {
 
 scanner.render(
   async (decodedText) => {
-    setProductId(decodedText);
-
     try {
-      const data = await verifyProduct(decodedText);
+      let scannedProductId = decodedText.trim();
+
+      // Extract Product ID from URL QR
+     if (scannedProductId.includes("/verify/")) {
+  scannedProductId =
+    scannedProductId
+      .split("/verify/")[1]
+      .split("?")[0];
+}
+
+      setProductId(scannedProductId);
+
+      const data =
+        await verifyProduct(scannedProductId);
+
       setResult(data);
-    } catch {
+
+      // Stop scanner after successful scan
+      setTimeout(() => {
+  scanner.clear().catch(() => {});
+}, 500);
+    } catch (error) {
+      console.error(error);
       alert("Product not found");
       setResult(null);
     }
@@ -34,7 +52,9 @@ scanner.render(
 
 return () => {
   if (scanner) {
-    scanner.clear().catch(() => {});
+    setTimeout(() => {
+  scanner.clear().catch(() => {});
+}, 500);
   }
 };
 }, []);
@@ -45,9 +65,13 @@ const handleSearch = async (e) => {
   if (!productId) return;
 
   try {
-    const data = await verifyProduct(productId);
+    const cleanedProductId = productId.trim();
+
+const data =
+  await verifyProduct(cleanedProductId);
     setResult(data);
   } catch (error) {
+    console.error(error);
     alert("Product not found");
     setResult(null);
   }
@@ -146,6 +170,14 @@ const handleSearch = async (e) => {
     id="reader"
     className="w-full max-w-sm"
   ></div>
+  {productId && (
+  <p className="text-sm text-slate-600">
+    Scanned Product:{" "}
+    <span className="font-mono">
+      {productId}
+    </span>
+  </p>
+)}
 
   <p className="text-xs text-slate-400">
     Powered by Agri ZKP verification protocol
